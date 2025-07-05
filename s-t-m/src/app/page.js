@@ -1,13 +1,13 @@
 'use client';
 
 import { SignedIn, SignedOut, SignInButton } from '@clerk/nextjs';
-import HomePage from "@/app/pages/Homepage/page";
+import MainPage from "@/components/Homepage";
 
-export default function MainPage() {
+export default function Home() {
   return (
     <>
       <SignedIn>
-        <HomePage />
+        <MainPage />
       </SignedIn>
 
       <SignedOut>

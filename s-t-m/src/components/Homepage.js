@@ -5,7 +5,7 @@ import { useUser, SignOutButton } from '@clerk/nextjs';
 import TaskForm from "@/components/TaskForm";
 import TaskList from "@/components/TaskList";
 
-export default function Home() {
+export default function MainPage() {
   const { user } = useUser();
   const [tasks, setTasks] = useState([]);
   const [editingTask, setEditingTask] = useState(null);
