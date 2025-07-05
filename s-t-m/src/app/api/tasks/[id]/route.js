@@ -1,18 +1,27 @@
 import { connectToDatabase } from "@/lib/mongodb";
 import Task from "@/models/task";
 import { NextResponse } from "next/server";
+import { getAuth } from "@clerk/nextjs/server"; // ✅ Correct import
 
-// ✅ Update Task (Edit / Mark as Done)
+// ✅ PUT: Update a task
 export async function PUT(req, context) {
   try {
-    const { id } = context.params; // ✅ Correct way
+    const { userId } = getAuth(req); // ✅ Correct usage
+    if (!userId) return new Response("Unauthorized", { status: 401 });
+
+    const { id } = context.params;
     const body = await req.json();
+
     await connectToDatabase();
 
-    const updatedTask = await Task.findByIdAndUpdate(id, body, { new: true });
+    const updatedTask = await Task.findOneAndUpdate(
+      { _id: id, userId },
+      body,
+      { new: true }
+    );
 
     if (!updatedTask) {
-      return new Response("Task not found", { status: 404 });
+      return new Response("Task not found or unauthorized", { status: 404 });
     }
 
     return NextResponse.json(updatedTask);
@@ -22,17 +31,20 @@ export async function PUT(req, context) {
   }
 }
 
-
-// ✅ Delete Task
-export async function DELETE(req, { params }) {
+// ✅ DELETE: Delete a task
+export async function DELETE(req, context) {
   try {
-    const { id } = await context.params;
+    const { userId } = getAuth(req); // ✅ Correct usage
+    if (!userId) return new Response("Unauthorized", { status: 401 });
+
+    const { id } = context.params;
+
     await connectToDatabase();
 
-    const deleted = await Task.findByIdAndDelete(id);
+    const deleted = await Task.findOneAndDelete({ _id: id, userId });
 
     if (!deleted) {
-      return new Response("Task not found", { status: 404 });
+      return new Response("Task not found or unauthorized", { status: 404 });
     }
 
     return NextResponse.json({ message: "Deleted successfully" });

@@ -5,6 +5,10 @@ const TaskSchema = new mongoose.Schema({
   category: String,
   deadline: String,
   completed: Boolean,
+  userId: {
+    type: String,
+    required: true, // 👈 ensure it's always provided
+  },
 }, { timestamps: true });
 
 export default mongoose.models.Task || mongoose.model("Task", TaskSchema);
